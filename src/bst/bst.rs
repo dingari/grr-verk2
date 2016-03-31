@@ -42,14 +42,19 @@ impl<T: PartialOrd + Clone> Bst<T> {
         }
 
         let n = beta.len();
-        let mut sum: f32 = 0.0;
+        let mut sum: f32 = 1.0;
 
         let heights = self.gather_heights();
         let b = heights.0;
         let a = heights.1;
 
         for i in 1..n {
-            sum += beta[i] * ((b[i] + 1) as f32) + alpha[i-1] * (a[i-1] as f32);
+
+            sum += beta[i] * (b[i] as f32);
+        }
+
+        for i in 0..n {
+            sum += alpha[i] * (a[i] as f32);
         }
 
         return sum
@@ -107,6 +112,7 @@ pub fn inorder_tree_walk<T: fmt::Debug>(boxed_node: &Option<Box<Node<T>>>) {
         &None => {}
     };
 }
+
 
 #[test]
 fn empty_height() {
