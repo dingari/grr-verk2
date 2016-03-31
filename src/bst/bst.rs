@@ -1,5 +1,6 @@
 use std::fmt;
 use std::cmp;
+use super::node::Node;
 
 #[derive(Debug, Default)]
 pub struct Bst<T> {
@@ -35,25 +36,31 @@ impl<T: PartialOrd + Clone> Bst<T> {
         }
     }
 
-    pub fn weighted_path_length(beta: &Vec<f32>, alpha: Vec<f32>) -> f32 {
-        if beta.len() != alpha.len()+1 {
+    pub fn weighted_path_length(&self, beta: &Vec<f32>, alpha: &Vec<f32>) -> f32 {
+        if beta.len() != alpha.len() {
             panic!("Vectors must have equal length");
         }
 
-        let n = alpha.len();
+        let n = beta.len();
         let mut sum: f32 = 0.0;
 
-        
-        // for i in 1..n+1 {
-        //     sum += beta[i] * (b[i] + 1) + alpha[i-1] * a[i-1];
-        // }
+        let heights = self.gather_heights();
+        let b = heights.0;
+        let a = heights.1;
+
+        for i in 1..n {
+            sum += beta[i] * ((b[i] + 1) as f32) + alpha[i-1] * (a[i-1] as f32);
+        }
 
         return sum
     }
 
-    pub fn gather_heights(&self) -> (Vec<usize>, Vec<usize>) {
+    fn gather_heights(&self) -> (Vec<usize>, Vec<usize>) {
         let mut b: Vec<usize> = Vec::new();
         let mut a: Vec<usize> = Vec::new();
+
+        // Push a dummy value at the front to make indexing easier later
+        b.push(0);
 
         match &self.root {
             &Some(ref node) => self.gather_heights_rec(&self.root, &mut b, &mut a),
@@ -86,81 +93,6 @@ impl<T: PartialOrd + Clone> Bst<T> {
                 self.gather_heights_rec(&node.right, b, a);
             }
             &None => {}
-        }
-    }
-}
-
-#[derive(Debug, Default, PartialEq)]
-pub struct Node<T> {
-    pub val: T,
-    pub left: Option<Box<Node<T>>>,
-    pub right: Option<Box<Node<T>>>
-}
-
-impl<T: PartialOrd + Clone> Node<T> {
-	pub fn new(new_val: T) -> Node<T> {
-		Node {
-			val: new_val,
-			left: None,
-			right: None
-		}
-	}
-
-    pub fn insert(&mut self, new_val: T) {
-    	if self.val == new_val {
-    		return
-    	}
-
-    	let target_node = if new_val < self.val {
-    		&mut self.left
-    	} else {
-    		&mut self.right
-    	};
-
-    	match target_node {
-    		&mut Some(ref mut subnode) => { subnode.insert(new_val) }
-    		&mut None => {
-    			let new_node = Node::new(new_val);
-    			let boxed_node = Some(Box::new(new_node));
-    			*target_node = boxed_node;
-    		}
-    	}
-    }
-
-    pub fn height(&self) -> usize {
-        let height_left = match &self.left {
-            &Some(ref subnode) => subnode.height() + 1,
-            &None => 0
-        };
-
-        let height_right = match &self.right {
-            &Some(ref subnode) => subnode.height() + 1,
-            &None => 0
-        };
-
-        return cmp::max(height_left, height_right)
-    }
-
-    pub fn distance_to(&self, key: T) -> isize {
-        if key < self.val {
-            match &self.left {
-                &Some(ref subnode) => subnode.distance_to(key) + 1,
-                &None => -1
-            }
-        } else if key > self.val {
-            match &self.right {
-                &Some(ref subnode) => subnode.distance_to(key) + 1,
-                &None => -1
-            }
-        } else {
-            return 0
-        }
-    }
-
-    pub fn is_leaf(&self) -> bool {
-        match (&self.left, &self.right) {
-            (&None, &None) => true,
-            _ => false
         }
     }
 }
