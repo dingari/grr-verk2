@@ -1,5 +1,7 @@
+mod bst;
 mod vec2d;
 
+use bst::Bst;
 use vec2d::Vec2d;
 
 fn main() {
@@ -10,12 +12,19 @@ fn main() {
 	let p: Vec<f32> = vec![0.0, 0.15, 0.1, 0.05, 0.1, 0.2];
 	let q: Vec<f32> = vec![0.05, 0.1, 0.05, 0.05, 0.05, 0.1];
 
-	// print!("{:?} \n", p);
-	// print!("{:?} \n", p);
+	// let k: Vec<&str> = vec!["asdf", "bar", "baz", "foo", "oof"];
+	let k: Vec<i32> = vec![1, 2, 3, 4, 5];
+
+	println!("{:?}", k);
 
 	let res = optimal_bst(&p, &q, n);
 	let e = res.0;
 	let root = res.1;
+
+	let mut bst = Bst::default();
+	println!("BST before: {:?}", bst);
+	construct_optimal_bst(&k, &root, &mut bst, 1, n);
+	println!("BST after: {:?}", bst);
 }
 
 fn optimal_bst(p: &Vec<f32>, q: &Vec<f32>, n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
@@ -56,4 +65,17 @@ fn optimal_bst(p: &Vec<f32>, q: &Vec<f32>, n: usize) -> (Vec2d<f32>, Vec2d<usize
 	println!("{:?}", root);
 
 	return (e, root);
+}
+
+fn construct_optimal_bst<T: Default + PartialOrd + Clone>(k: &Vec<T>, root: &Vec2d<usize>, bst: &mut Bst<T>, i: usize, j: usize) {
+	if j == i-1 {
+		return
+	}
+
+	let r = root.get(i-1, j-1);
+	let new_val = k[r-1].clone();
+	bst.insert(new_val);
+
+	construct_optimal_bst(k, root, bst, i, r-1);
+	construct_optimal_bst(k, root, bst, r+1, j);
 }
