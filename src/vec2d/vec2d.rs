@@ -26,8 +26,8 @@ impl<T: Clone + Default + fmt::Debug> Vec2d<T> {
     	self.v[i][j] = val;
     }
 
-    pub fn len(&self) -> usize {
-    	self.v.len()
+    pub fn len(&self) -> (usize, usize) {
+    	(self.v.len(), self.v[0].len())
     }
 }
 
