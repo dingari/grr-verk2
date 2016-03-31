@@ -25,6 +25,8 @@ fn main() {
 	println!("BST before: {:?}", bst);
 	construct_optimal_bst(&k, &root, &mut bst, 1, n);
 	println!("BST after: {:?}", bst);
+
+	println!("BST height: {:?}", bst.height());
 }
 
 fn optimal_bst(p: &Vec<f32>, q: &Vec<f32>, n: usize) -> (Vec2d<f32>, Vec2d<usize>) {

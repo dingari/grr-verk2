@@ -1,3 +1,5 @@
+use std::cmp;
+
 #[derive(Debug, Default)]
 pub struct Bst<T> {
     root: Option<Box<Node<T>>>
@@ -17,6 +19,17 @@ impl<T: PartialOrd> Bst<T> {
 			}
 		}
 	}
+
+    pub fn height(&self) -> usize {
+        match &self.root {
+            &Some(ref node) => node.height(),
+            &None => 0
+        }
+    }
+
+    pub fn weighted_path_length(&self) -> f32 {
+        0.0
+    }
 }
 
 #[derive(Debug, Default, PartialEq)]
@@ -55,4 +68,42 @@ impl<T: PartialOrd> Node<T> {
     		}
     	}
     }
+
+    pub fn height(&self) -> usize {
+        let height_left = match &self.left {
+            &Some(ref subnode) => subnode.height() + 1,
+            &None => 0
+        };
+
+        let height_right = match &self.right {
+            &Some(ref subnode) => subnode.height() + 1,
+            &None => 0
+        };
+
+        return cmp::max(height_left, height_right)
+    }
+}
+
+#[test]
+fn empty_height() {
+    let bst: Bst<i32> = Bst::default();
+    assert_eq!(bst.height(), 0);
+}
+
+#[test]
+fn height() {
+    let mut bst: Bst<i32> = Bst::default();
+    bst.insert(1);
+    bst.insert(2);
+    bst.insert(3);
+    bst.insert(4);
+
+    assert_eq!(bst.height(), 3);
+
+    let mut bst2: Bst<i32> = Bst::default();
+    bst2.insert(2);
+    bst2.insert(1);
+    bst2.insert(3);
+
+    assert_eq!(bst2.height(), 1);
 }
