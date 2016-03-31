@@ -16,8 +16,10 @@ impl<T: Clone + Default + fmt::Debug> Vec2d<T> {
     	}
     }
 
-    pub fn get(&self, i: usize, j: usize) -> &T {
-    	&self.v[i][j]
+    pub fn get(&self, i: usize, j: usize) -> T {
+        // TODO: might want to return a reference instead of clone
+        // But for now, this works better
+    	self.v[i][j].clone()
     }
 
     pub fn set(&mut self, i: usize, j: usize, val: T) {
