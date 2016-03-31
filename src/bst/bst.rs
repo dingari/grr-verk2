@@ -1,8 +1,9 @@
+use std::fmt;
 use std::cmp;
 
 #[derive(Debug, Default)]
 pub struct Bst<T> {
-    root: Option<Box<Node<T>>>
+    pub root: Option<Box<Node<T>>>
 }
 
 impl<T: PartialOrd> Bst<T> {
@@ -27,16 +28,35 @@ impl<T: PartialOrd> Bst<T> {
         }
     }
 
-    pub fn weighted_path_length(&self) -> f32 {
-        0.0
+    pub fn distance_to(&self, key: T) -> isize {
+        match &self.root {
+            &Some(ref node) => node.distance_to(key),
+            &None => -1
+        }
+    }
+
+    pub fn weighted_path_length(beta: &Vec<f32>, alpha: Vec<f32>) -> f32 {
+        if beta.len() != alpha.len()+1 {
+            panic!("Vectors must have equal length");
+        }
+
+        let n = alpha.len();
+        let mut sum: f32 = 0.0;
+
+        
+        // for i in 1..n+1 {
+        //     sum += beta[i] * (b[i] + 1) + alpha[i-1] * a[i-1];
+        // }
+
+        return sum
     }
 }
 
 #[derive(Debug, Default, PartialEq)]
-struct Node<T> {
-    val: T,
-    left: Option<Box<Node<T>>>,
-    right: Option<Box<Node<T>>>
+pub struct Node<T> {
+    pub val: T,
+    pub left: Option<Box<Node<T>>>,
+    pub right: Option<Box<Node<T>>>
 }
 
 impl<T: PartialOrd> Node<T> {
@@ -82,6 +102,40 @@ impl<T: PartialOrd> Node<T> {
 
         return cmp::max(height_left, height_right)
     }
+
+    pub fn distance_to(&self, key: T) -> isize {
+        if key < self.val {
+            match &self.left {
+                &Some(ref subnode) => subnode.distance_to(key) + 1,
+                &None => -1
+            }
+        } else if key > self.val {
+            match &self.right {
+                &Some(ref subnode) => subnode.distance_to(key) + 1,
+                &None => -1
+            }
+        } else {
+            return 0
+        }
+    }
+
+    pub fn is_leaf(&self) -> bool {
+        match (&self.left, &self.right) {
+            (&None, &None) => true,
+            _ => false
+        }
+    }
+}
+
+pub fn inorder_tree_walk<T: fmt::Debug>(boxed_node: &Option<Box<Node<T>>>) {
+    match boxed_node {
+        &Some(ref node) => {
+            inorder_tree_walk(&node.left);
+            println!("{:?}", node.val);
+            inorder_tree_walk(&node.right);
+        }
+        &None => {}
+    };
 }
 
 #[test]
@@ -106,4 +160,33 @@ fn height() {
     bst2.insert(3);
 
     assert_eq!(bst2.height(), 1);
+}
+
+#[test]
+fn leaf() {
+    let mut bst: Bst<i32> = Bst::default();
+    bst.insert(5);
+
+    assert!(bst.root.as_ref().unwrap().is_leaf());
+
+    bst.insert(6);
+
+    assert!(!bst.root.as_ref().unwrap().is_leaf());
+    assert!(bst.root.as_ref().unwrap().right.as_ref().unwrap().is_leaf());
+}
+
+#[test]
+fn distance() {
+    let mut tree: Bst<i32> = Bst::default();
+    tree.insert(2);
+    tree.insert(1);
+    tree.insert(5);
+    tree.insert(4);
+    tree.insert(3);
+
+    assert_eq!(tree.distance_to(1), 1);
+    assert_eq!(tree.distance_to(2), 0);
+    assert_eq!(tree.distance_to(3), 3);
+    assert_eq!(tree.distance_to(4), 2);
+    assert_eq!(tree.distance_to(5), 1);
 }
