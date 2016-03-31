@@ -2,3 +2,7 @@
 
 name = "grr-verk2"
 version = "0.0.1"
+
+[dependencies]
+
+rand = "0.3.14"
