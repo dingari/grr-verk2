@@ -6,8 +6,6 @@ use vec2d::Vec2d;
 
 fn main() {
 	let n = 5;
-	// let p: Vec<f32> = vec![0.0; n];
-	// let q: Vec<f32> = vec![0.0; n];
 
 	let p: Vec<f32> = vec![0.0, 0.15, 0.1, 0.05, 0.1, 0.2];
 	let q: Vec<f32> = vec![0.05, 0.1, 0.05, 0.05, 0.05, 0.1];
@@ -15,20 +13,14 @@ fn main() {
 	// let k: Vec<&str> = vec!["asdf", "bar", "baz", "foo", "oof"];
 	let k: Vec<i32> = vec![1, 2, 3, 4, 5];
 
-	println!("{:?}", k);
-
 	let res = optimal_bst(&p, &q, n);
 	let e = res.0;
 	let root = res.1;
 
 	let mut tree = bst::Bst::default();
-	println!("BST before: {:?}", tree);
 	construct_optimal_bst(&k, &root, &mut tree, 1, n);
-	println!("BST after: {:?}", tree);
 
-	println!("BST height: {:?}", tree.height());
-
-	bst::inorder_tree_walk(&tree.root);
+	println!("{:?}", tree.weighted_path_length(&p, &q));
 }
 
 fn optimal_bst(p: &Vec<f32>, q: &Vec<f32>, n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
