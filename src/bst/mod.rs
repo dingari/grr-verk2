@@ -1,3 +1,3 @@
 mod bst;
 
-pub use self::bst::BST;
+pub use self::bst::Bst;

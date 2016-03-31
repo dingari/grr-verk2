@@ -1,9 +1,9 @@
 #[derive(Debug, Default)]
-pub struct BST<T> {
+pub struct Bst<T> {
     root: Option<Box<Node<T>>>
 }
 
-impl<T: PartialOrd> BST<T> {
+impl<T: PartialOrd> Bst<T> {
 	pub fn insert(&mut self, new_val: T) {
 		let target_node = &mut self.root;
 		match target_node {
