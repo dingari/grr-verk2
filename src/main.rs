@@ -1,7 +1,7 @@
 mod bst;
 mod vec2d;
 
-use bst::Bst;
+// use bst;
 use vec2d::Vec2d;
 
 fn main() {
@@ -21,12 +21,14 @@ fn main() {
 	let e = res.0;
 	let root = res.1;
 
-	let mut bst = Bst::default();
-	println!("BST before: {:?}", bst);
-	construct_optimal_bst(&k, &root, &mut bst, 1, n);
-	println!("BST after: {:?}", bst);
+	let mut tree = bst::Bst::default();
+	println!("BST before: {:?}", tree);
+	construct_optimal_bst(&k, &root, &mut tree, 1, n);
+	println!("BST after: {:?}", tree);
 
-	println!("BST height: {:?}", bst.height());
+	println!("BST height: {:?}", tree.height());
+
+	bst::inorder_tree_walk(&tree.root);
 }
 
 fn optimal_bst(p: &Vec<f32>, q: &Vec<f32>, n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
@@ -69,7 +71,7 @@ fn optimal_bst(p: &Vec<f32>, q: &Vec<f32>, n: usize) -> (Vec2d<f32>, Vec2d<usize
 	return (e, root);
 }
 
-fn construct_optimal_bst<T: Default + PartialOrd + Clone>(k: &Vec<T>, root: &Vec2d<usize>, bst: &mut Bst<T>, i: usize, j: usize) {
+fn construct_optimal_bst<T: Default + PartialOrd + Clone>(k: &Vec<T>, root: &Vec2d<usize>, bst: &mut bst::Bst<T>, i: usize, j: usize) {
 	if j == i-1 {
 		return
 	}
