@@ -6,7 +6,7 @@ pub struct Bst<T> {
     pub root: Option<Box<Node<T>>>
 }
 
-impl<T: PartialOrd> Bst<T> {
+impl<T: PartialOrd + Clone> Bst<T> {
 	pub fn insert(&mut self, new_val: T) {
 		let target_node = &mut self.root;
 		match target_node {
@@ -50,6 +50,44 @@ impl<T: PartialOrd> Bst<T> {
 
         return sum
     }
+
+    pub fn gather_heights(&self) -> (Vec<usize>, Vec<usize>) {
+        let mut b: Vec<usize> = Vec::new();
+        let mut a: Vec<usize> = Vec::new();
+
+        match &self.root {
+            &Some(ref node) => self.gather_heights_rec(&self.root, &mut b, &mut a),
+            &None => {}
+        }
+
+        return (b, a)
+    }
+
+    fn gather_heights_rec(&self, boxed_node: &Option<Box<Node<T>>>, b: &mut Vec<usize>, a: &mut Vec<usize>) {
+        match boxed_node {
+            &Some(ref node) => {
+                self.gather_heights_rec(&node.left, b, a);
+
+                let dist = self.root.as_ref().unwrap().distance_to(node.val.clone());
+                b.push(dist as usize);
+
+                // Look for a left "dummy" leaf
+                match &node.left {
+                    &None => a.push((dist+1) as usize),
+                    &Some(ref subnode) => {}
+                }
+
+                // Look for a right "dummy" leaf
+                match &node.right {
+                    &None => a.push((dist+1) as usize),
+                    &Some(ref subnode) => {}
+                }
+
+                self.gather_heights_rec(&node.right, b, a);
+            }
+            &None => {}
+        }
+    }
 }
 
 #[derive(Debug, Default, PartialEq)]
@@ -59,7 +97,7 @@ pub struct Node<T> {
     pub right: Option<Box<Node<T>>>
 }
 
-impl<T: PartialOrd> Node<T> {
+impl<T: PartialOrd + Clone> Node<T> {
 	pub fn new(new_val: T) -> Node<T> {
 		Node {
 			val: new_val,
