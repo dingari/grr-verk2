@@ -7,10 +7,9 @@ pub struct Vec2d<T> {
     v: Vec<Vec<T>>
 }
 
-
 impl<T: Clone + Default + fmt::Debug> Vec2d<T> {
-    pub fn new(N: usize, M: usize) -> Vec2d<T> {
-    	let tmpV: Vec<Vec<T>> = vec![vec![T::default(); N]; M];
+    pub fn new(n: usize, m: usize) -> Vec2d<T> {
+    	let tmpV: Vec<Vec<T>> = vec![vec![T::default(); n]; m];
     	Vec2d {
     		v: tmpV
     	}
