@@ -117,7 +117,7 @@ pub fn optimal_bst(p: &Vec<f32>,n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
     return (e, root);
 }
 
-pub fn construct_optimal_bst<T: Default + PartialOrd + Clone>(k: &Vec<T>, root: &Vec2d<usize>, tree: &mut Bst<T>, i: usize, j: usize) {
+pub fn construct_optimal_bst<T: PartialOrd + Clone>(k: &Vec<T>, root: &Vec2d<usize>, tree: &mut Bst<T>, i: usize, j: usize) {
     if j == i-1 {
         return
     }
