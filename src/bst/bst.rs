@@ -1,5 +1,4 @@
 use std::fmt;
-use std::cmp;
 use super::node::Node;
 
 #[derive(Debug, Default)]
