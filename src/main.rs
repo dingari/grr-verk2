@@ -8,12 +8,10 @@ fn main() {
 	let n = 5;
 
 	let p: Vec<f32> = vec![0.0, 0.3, 0.15, 0.10, 0.15, 0.3];
-	let q: Vec<f32> = vec![0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 
-	// let k: Vec<&str> = vec!["asdf", "bar", "baz", "foo", "oof"];
 	let k: Vec<i32> = vec![1, 2, 3, 4, 5];
 
-	let res = optimal_bst(&p, &q, n);
+	let res = optimal_bst(&p, n);
 	let e = res.0;
 	let root = res.1;
 
@@ -23,16 +21,10 @@ fn main() {
 	println!("{:?}", tree.weighted_path_length(&p));
 }
 
-fn optimal_bst(p: &Vec<f32>, q: &Vec<f32>, n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
+fn optimal_bst(p: &Vec<f32>,n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
 	let mut e: Vec2d<f32> = Vec2d::new(n+1, n+2);
 	let mut w: Vec2d<f32> = Vec2d::new(n+1, n+2);
 	let mut root: Vec2d<usize> = Vec2d::new(n, n);
-
-	
-	for i in 1..n+2 {
-		e.set(i, i-1, q[i-1]);
-		w.set(i, i-1, q[i-1]);
-	}
 
 	println!("{:?}", e);
 
@@ -42,7 +34,7 @@ fn optimal_bst(p: &Vec<f32>, q: &Vec<f32>, n: usize) -> (Vec2d<f32>, Vec2d<usize
 			let j = i + l - 1;
 			println!("loop 2: i={:?}, j={:?}", i, j);
 			e.set(i, j, std::f64::INFINITY as f32);
-			let tmp = w.get(i, j-1) + p[j] + q[j];
+			let tmp = w.get(i, j-1) + p[j];
 			w.set(i, j, tmp);
 			for r in i..j+1 {
 				let t = e.get(i, r-1) + e.get(r+1, j) + w.get(i, j);

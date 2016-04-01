@@ -36,46 +36,46 @@ impl<T: PartialOrd + Clone> Bst<T> {
         }
     }
 
-    pub fn weighted_path_length(&self, beta: &Vec<f32>) -> f32 {
-        let n = beta.len();
-        let b = self.gather_heights();
+    pub fn weighted_path_length(&self, p: &Vec<f32>) -> f32 {
+        let n = p.len();
+        let depth = self.gather_heights();
 
-        if n != b.len() {
+        if n != depth.len() {
             panic!("Vectors must be same length!");
         }
 
         let mut sum: f32 = 1.0;
 
         for i in 1..n {
-            sum += beta[i] * (b[i] as f32);
+            sum += (depth[i] as f32) * p[i];
         }
 
         return sum
     }
 
     fn gather_heights(&self) -> Vec<usize> {
-        let mut b: Vec<usize> = Vec::new();
+        let mut depth: Vec<usize> = Vec::new();
 
         // Push a dummy value at the front to make indexing easier later
-        b.push(0);
+        depth.push(0);
 
         match &self.root {
-            &Some(ref node) => self.gather_heights_rec(&self.root, &mut b),
+            &Some(ref node) => self.gather_heights_rec(&self.root, &mut depth),
             &None => {}
         }
 
-        return b
+        return depth
     }
 
-    fn gather_heights_rec(&self, boxed_node: &Option<Box<Node<T>>>, b: &mut Vec<usize>) {
+    fn gather_heights_rec(&self, boxed_node: &Option<Box<Node<T>>>, depth: &mut Vec<usize>) {
         match boxed_node {
             &Some(ref node) => {
-                self.gather_heights_rec(&node.left, b);
+                self.gather_heights_rec(&node.left, depth);
 
                 let dist = self.root.as_ref().unwrap().distance_to(node.val.clone());
-                b.push(dist as usize);
+                depth.push(dist as usize);
 
-                self.gather_heights_rec(&node.right, b);
+                self.gather_heights_rec(&node.right, depth);
             }
             &None => {}
         }
