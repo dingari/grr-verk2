@@ -1,4 +1,5 @@
 use std::cmp;
+use std::fmt;
 
 #[derive(Debug, Default, PartialEq)]
 pub struct Node<T> {
@@ -73,4 +74,19 @@ impl<T: PartialOrd + Clone> Node<T> {
             _ => false
         }
     }
+}
+
+////////////////////////
+// "Static" functions //
+////////////////////////
+
+pub fn inorder_tree_walk<T: fmt::Debug>(boxed_node: &Option<Box<Node<T>>>) {
+    match boxed_node {
+        &Some(ref node) => {
+            inorder_tree_walk(&node.left);
+            println!("{:?}", node.val);
+            inorder_tree_walk(&node.right);
+        }
+        &None => {}
+    };
 }
