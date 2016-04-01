@@ -36,66 +36,46 @@ impl<T: PartialOrd + Clone> Bst<T> {
         }
     }
 
-    pub fn weighted_path_length(&self, beta: &Vec<f32>, alpha: &Vec<f32>) -> f32 {
-        if beta.len() != alpha.len() {
-            panic!("Vectors must have equal length");
+    pub fn weighted_path_length(&self, beta: &Vec<f32>) -> f32 {
+        let n = beta.len();
+        let b = self.gather_heights();
+
+        if n != b.len() {
+            panic!("Vectors must be same length!");
         }
 
-        let n = beta.len();
         let mut sum: f32 = 1.0;
 
-        let heights = self.gather_heights();
-        let b = heights.0;
-        let a = heights.1;
-
         for i in 1..n {
-
             sum += beta[i] * (b[i] as f32);
-        }
-
-        for i in 0..n {
-            sum += alpha[i] * (a[i] as f32);
         }
 
         return sum
     }
 
-    fn gather_heights(&self) -> (Vec<usize>, Vec<usize>) {
+    fn gather_heights(&self) -> Vec<usize> {
         let mut b: Vec<usize> = Vec::new();
-        let mut a: Vec<usize> = Vec::new();
 
         // Push a dummy value at the front to make indexing easier later
         b.push(0);
 
         match &self.root {
-            &Some(ref node) => self.gather_heights_rec(&self.root, &mut b, &mut a),
+            &Some(ref node) => self.gather_heights_rec(&self.root, &mut b),
             &None => {}
         }
 
-        return (b, a)
+        return b
     }
 
-    fn gather_heights_rec(&self, boxed_node: &Option<Box<Node<T>>>, b: &mut Vec<usize>, a: &mut Vec<usize>) {
+    fn gather_heights_rec(&self, boxed_node: &Option<Box<Node<T>>>, b: &mut Vec<usize>) {
         match boxed_node {
             &Some(ref node) => {
-                self.gather_heights_rec(&node.left, b, a);
+                self.gather_heights_rec(&node.left, b);
 
                 let dist = self.root.as_ref().unwrap().distance_to(node.val.clone());
                 b.push(dist as usize);
 
-                // Look for a left "dummy" leaf
-                match &node.left {
-                    &None => a.push((dist+1) as usize),
-                    &Some(ref subnode) => {}
-                }
-
-                // Look for a right "dummy" leaf
-                match &node.right {
-                    &None => a.push((dist+1) as usize),
-                    &Some(ref subnode) => {}
-                }
-
-                self.gather_heights_rec(&node.right, b, a);
+                self.gather_heights_rec(&node.right, b);
             }
             &None => {}
         }
