@@ -1,7 +1,10 @@
+extern crate rand;
+
 mod bst;
 mod vec2d;
 
 // use bst;
+use rand::Rng;
 use vec2d::Vec2d;
 
 fn main() {
@@ -25,6 +28,12 @@ fn main() {
 	println!("Greedy tree: {:?}", tree_gr);
 	println!("Height: {:?}", tree_gr.height());
 	println!("Weighted path length: {:?}", tree_gr.weighted_path_length(&p));
+
+	let mut tree_rand = bst::Bst::default();
+	construct_random_bst(&k, &mut tree_rand);
+	println!("Random tree: {:?}", tree_rand);
+	println!("Height: {:?}", tree_rand.height());
+	println!("Weighted path length: {:?}", tree_rand.weighted_path_length(&p));
 }
 
 fn optimal_bst(p: &Vec<f32>,n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
@@ -97,4 +106,20 @@ fn construct_greedy_bst<T: PartialOrd + Clone>(k: &Vec<T>, p: &Vec<f32>, tree: &
 
 fn construct_equal_bst<T>(k: &Vec<T>, p: &Vec<f32>, tree: &mut bst::Bst<T>, i: usize, j: usize) {
 
+}
+
+fn construct_random_bst<T: PartialOrd + Clone>(k: &Vec<T>, tree: &mut bst::Bst<T>) {
+	let n = k.len();
+	let mut used_ind: Vec<bool> = vec![false; n];
+	let mut rng = rand::thread_rng();
+
+	let mut num_inserted = 0;
+	while num_inserted < n {
+		let i = rng.gen_range(0, n);
+		if !used_ind[i] {
+			tree.insert(k[i].clone());
+			used_ind[i] = true;
+			num_inserted += 1;
+		}
+	}
 }
