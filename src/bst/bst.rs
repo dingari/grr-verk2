@@ -1,8 +1,8 @@
 extern crate rand;
 extern crate std;
 
+
 use self::rand::Rng;
-use std::fmt;
 use vec2d::Vec2d;
 
 use super::node::Node;
@@ -13,6 +13,7 @@ pub struct Bst<T> {
     pub root: Option<Box<Node<T>>>
 }
 
+#[allow(dead_code)]
 impl<T: PartialOrd + Clone> Bst<T> {
 	pub fn insert(&mut self, new_val: T) {
 		let target_node = &mut self.root;
@@ -59,6 +60,7 @@ impl<T: PartialOrd + Clone> Bst<T> {
         return sum
     }
 
+    #[allow(unused_variables)]
     fn gather_heights(&self) -> Vec<usize> {
         let mut depth: Vec<usize> = Vec::new();
 
@@ -158,51 +160,36 @@ pub fn construct_equal_bst<T: PartialOrd + Clone>(k: &Vec<T>, p: &Vec<f32>, tree
         return
     }
 
-    let mut r = (j - i)/2 + i;
+    let mut min: (usize, f32) = (0, std::f32::INFINITY);
 
-    let mut l_sum = 0.0;
-    for l in i..r {
-        l_sum += p[l];
-    }
+    for r in i..j+1 {
+        let mut r = r;
 
-    let mut r_sum = 0.0;
-    for l in r+1..j+1 {
-        r_sum += p[l];
-    }
+        if (r-i)%2 != 0 {
+            r = j - r/2 + (i+1)/2;
+        } else {
+            r = r/2 + (i+1)/2;
+        }
+        
+        // Sum left side
+        let mut l_sum: f32 = 0.0;
+        for s in i..r {
+            l_sum += p[s];
+        }
 
-    let mut min_diff = (l_sum - r_sum).abs();
-
-    // Loop until the best root is found
-    loop {
-        let l_sum_old = l_sum;
-        let r_sum_old = r_sum;
-        let r_old = r;
-
-        if l_sum < r_sum {
-            // Move root to the right
-            r = r+1;
-            l_sum = l_sum + p[r-1];
-            r_sum = r_sum - p[r];
-        } else if l_sum > r_sum {
-            // Move root to the left
-            r = r-1;
-            l_sum = l_sum - p[r];
-            r_sum = r_sum + p[r+1];
-        } 
+        // Sum right side
+        let mut r_sum: f32 = 0.0;
+        for t in r+1..j+1 {
+            r_sum += p[t];
+        }
 
         let diff = (l_sum - r_sum).abs();
-
-        if diff < min_diff {
-            min_diff = diff;
-        } else {
-            l_sum = l_sum_old;
-            r_sum = r_sum_old;
-            r = r_old;
-
-            break;
+        if diff < min.1 {
+            min = (r, diff)
         }
     }
     
+    let r = min.0;
     let new_val = k[r-1].clone();
     tree.insert(new_val);
 

@@ -4,10 +4,9 @@ mod bst;
 mod vec2d;
 
 use rand::Rng;
-use vec2d::Vec2d;
 
 fn main() {
-	let n: usize = 1000;
+	let n: usize = 10000;
 
 	// let p: Vec<f32> = vec![0.0, 0.3, 0.2, 0.05, 0.15, 0.3];
 	// let k: Vec<i32> = vec![1, 2, 3, 4, 5];
@@ -24,9 +23,15 @@ fn main() {
 	let mut shuffled_vec = zipf_vec_shuffled(n);
 	p.append(&mut shuffled_vec);
 
-	let res = bst::optimal_bst(&p, n);
-	let e = res.0;
-	let root = res.1;
+
+	// println!("k: {:?}", k);
+	// println!("p: {:?}", p);
+
+	println!("Running optimal_bst");
+
+	let root = bst::optimal_bst(&p, n).1;
+
+	println!("Done running optimal_bst");
 
 	let mut tree_opt = bst::Bst::default();
 	bst::construct_optimal_bst(&k, &root, &mut tree_opt, 1, n);
@@ -79,9 +84,9 @@ fn zipf_vec_shuffled(n: usize) -> Vec<f32> {
 	let mut zipf_slice = zipf_vec.as_mut_slice();
 	rng.shuffle(&mut zipf_slice);
 
-	let mut v = Vec::new();
-	v.extend_from_slice(zipf_slice);
-	return v;
+	let mut p = Vec::new();
+	p.extend_from_slice(zipf_slice);
+	return p;
 }
 
 #[cfg(test)]

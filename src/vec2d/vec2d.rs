@@ -1,6 +1,4 @@
-extern crate rand;
 
-use self::rand::Rng;
 use std::fmt;
 
 pub struct Vec2d<T> {
@@ -25,6 +23,7 @@ impl<T: Clone + Default + fmt::Debug> Vec2d<T> {
     	self.v[i][j] = val;
     }
 
+    #[allow(dead_code)]
     pub fn len(&self) -> (usize, usize) {
     	(self.v.len(), self.v[0].len())
     }

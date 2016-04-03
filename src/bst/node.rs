@@ -8,6 +8,7 @@ pub struct Node<T> {
     pub right: Option<Box<Node<T>>>
 }
 
+#[allow(dead_code)]
 impl<T: PartialOrd + Clone> Node<T> {
 	pub fn new(new_val: T) -> Node<T> {
 		Node {
@@ -80,6 +81,7 @@ impl<T: PartialOrd + Clone> Node<T> {
 // "Static" functions //
 ////////////////////////
 
+#[allow(dead_code)]
 pub fn inorder_tree_walk<T: fmt::Debug>(boxed_node: &Option<Box<Node<T>>>) {
     match boxed_node {
         &Some(ref node) => {
