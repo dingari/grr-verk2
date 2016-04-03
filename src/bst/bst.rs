@@ -1,7 +1,7 @@
 extern crate rand;
 extern crate std;
 
-use rand::Rng;
+use self::rand::Rng;
 use std::fmt;
 use vec2d::Vec2d;
 
