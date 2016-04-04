@@ -6,6 +6,7 @@ mod vec2d;
 use rand::Rng;
 use std::env;
 use std::fs::File;
+use std::io::Write;
 
 fn main() {
 	// Skip over first argument
@@ -28,9 +29,9 @@ fn main() {
 			println!("No filename specified - printing results to console");
 			n_vec.push(num);	// Assume that the first arg is the first n value
 		}
-		Err(ref err) => {
+		Err(ref err) => {;
 			match File::create(&arg) {
-				Ok(f) => {
+				Ok(mut f) => {
 					file = Some(f);
 					println!("file created: {:?}", file);
 				}
@@ -50,17 +51,28 @@ fn main() {
 		}
 	}
 
+	match file {
+	    Some(ref mut f) => {
+	    	f.write(b"n , Optimal, Greedy, Even, Random");
+	    }
+	    None => {}
+	}
+
 	for n in n_vec {
 		match file {
-			Some(ref f) => {
-				// TODO: write to file
+			Some(ref mut f) => {
+				let mut tmp_str = String::new();
+				tmp_str.push_str("\n");
+				tmp_str.push_str(&n.to_string());
+				f.write(tmp_str.as_bytes());
+
 			}
 			None => {
 				println!("-------------------");
 				println!("Running with n = {:?}", n);
 				println!("-------------------");
 			}
-		}
+		}	
 
 		let k: Vec<usize> = (1..n+1).collect();
 
@@ -77,29 +89,34 @@ fn main() {
 		// Pass the constructing functions in as closures
 		// That way we are able to use just one function 
 		// to test the four cases!
-		test_bst(&k, &p, n, &bst::construct_optimal_bst, &file);
-		test_bst(&k, &p, n, &bst::construct_greedy_bst, &file);
-		test_bst(&k, &p, n, &bst::construct_equal_bst, &file);
-		test_bst(&k, &p, n, &bst::construct_random_bst, &file);
+		test_bst(&k, &p, n, &bst::construct_optimal_bst, &mut file);
+		test_bst(&k, &p, n, &bst::construct_greedy_bst, &mut file);
+		test_bst(&k, &p, n, &bst::construct_equal_bst, &mut file);
+		test_bst(&k, &p, n, &bst::construct_random_bst, &mut file);
 	}
 
 }
 
 fn test_bst<T: PartialOrd + Clone + Default>(k: &Vec<T>, p: &Vec<f32>, n: usize, 
-		func: &Fn(&Vec<T>, &Vec<f32>, &mut bst::Bst<T>, usize, usize), file: &Option<File>) {
+		func: &Fn(&Vec<T>, &Vec<f32>, &mut bst::Bst<T>, usize, usize), file: &mut Option<File>) {
 	
 	let mut tree = bst::Bst::default();
 	func(k, p, &mut tree, 1, n);
 
+	let wpl = tree.weighted_path_length(&p);
+
 	match file {
-		&Some(ref f) => {
-			// TODO: write to file
+		&mut Some(ref mut f) => {
+			let mut tmp_str = String::new();
+			tmp_str.push_str(", ");
+			tmp_str.push_str(&wpl.to_string());
+			f.write(tmp_str.as_bytes());
 		}
-		&None => {
+		&mut None => {
 			// TODO: check if possible to print function name here
 			// println!("{:?}", func.to_string());
 			println!("Height: {:?}", tree.height());
-			println!("Weighted path length: {:?} \n", tree.weighted_path_length(&p));
+			println!("Weighted path length: {:?} \n", wpl);
 		}
 	}
 }
