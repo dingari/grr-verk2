@@ -29,10 +29,7 @@ fn main() {
 			n_vec.push(num);	// Assume that the first arg is the first n value
 		}
 		Err(ref err) => {
-			let mut filename = "data/".to_string();
-			filename.push_str(&arg);
-			filename.push_str(".csv");
-			match File::create(&filename) {
+			match File::create(&arg) {
 				Ok(f) => {
 					file = Some(f);
 					println!("file created: {:?}", file);
