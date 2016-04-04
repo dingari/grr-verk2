@@ -1,16 +1,38 @@
 extern crate rand;
+extern crate time;
 
 mod bst;
 mod vec2d;
 
 use rand::Rng;
+use std::env;
+use std::fs::File;
+use std::string::String;
+use time::*;
 
 fn main() {
-	let n: usize = 10000;
+	// let n: usize = 100;
 
-	// let p: Vec<f32> = vec![0.0, 0.3, 0.2, 0.05, 0.15, 0.3];
-	// let k: Vec<i32> = vec![1, 2, 3, 4, 5];
+	// Skip over first argument
+	let mut args = env::args().skip(1);
 
+	// Consume print argument
+	let print = args.next().unwrap();
+
+	// Consume values of n to test for
+	let mut n_vec: Vec<usize> = Vec::new();
+
+	loop {
+		match args.next() {
+			Some(ref s) => {
+				let value = s.parse::<usize>().unwrap();
+				n_vec.push(value);
+			}
+			None => break
+		}
+	}
+
+	let n = n_vec.len();
 	let k: Vec<usize> = (1..n+1).collect();
 
 	// We need to have an extra zero at the front of the p vector
@@ -23,15 +45,11 @@ fn main() {
 	let mut shuffled_vec = zipf_vec_shuffled(n);
 	p.append(&mut shuffled_vec);
 
-
-	// println!("k: {:?}", k);
-	// println!("p: {:?}", p);
-
 	println!("Running optimal_bst");
-
+	let start = time::precise_time_ns();
 	let root = bst::optimal_bst(&p, n).1;
-
-	println!("Done running optimal_bst");
+	let duration = time::precise_time_ns() - start;
+	println!("Ran optimal_bst in {:?} ms", (duration as f64) / (1000.0 * 1000.0));
 
 	let mut tree_opt = bst::Bst::default();
 	bst::construct_optimal_bst(&k, &root, &mut tree_opt, 1, n);
