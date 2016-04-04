@@ -1,5 +1,4 @@
 extern crate rand;
-extern crate time;
 
 mod bst;
 mod vec2d;
@@ -7,20 +6,43 @@ mod vec2d;
 use rand::Rng;
 use std::env;
 use std::fs::File;
-use time::*;
 
 fn main() {
-	// let n: usize = 100;
-
 	// Skip over first argument
 	let mut args = env::args().skip(1);
+	let arg = args.next().unwrap();
 
-	// Consume print argument
-	let print = args.next().unwrap();
-
-	// Consume values of n to test for
+	// Define a vector for the different size values
 	let mut n_vec: Vec<usize> = Vec::new();
 
+	// Reserve a file object to write results to
+	let mut file: Option<File> = None;
+
+	// Parse the first argument from the command line
+	// If a filename is specified the file object is instantiated
+	// and the results are written to that file
+	// If a number is found, the program assumes that no filename
+	// was provided and prints the results directly to the console
+	match arg.parse::<usize>() {
+		Ok(num) => {
+			println!("No filename specified - printing results to console");
+			n_vec.push(num);	// Assume that the first arg is the first n value
+		}
+		Err(ref err) => {
+			let mut filename = "data/".to_string();
+			filename.push_str(&arg);
+			filename.push_str(".csv");
+			match File::create(&filename) {
+				Ok(f) => {
+					file = Some(f);
+					println!("file created: {:?}", file);
+				}
+				Err(ref err) => println!("{:?}", err)
+			}
+		}
+	}
+
+	// Populate the size vector
 	loop {
 		match args.next() {
 			Some(ref s) => {
@@ -31,12 +53,18 @@ fn main() {
 		}
 	}
 
-	let file: Option<File> = None;
-	
 	for n in n_vec {
-		println!("-------------------");
-		println!("Running with n={:?}", n);
-		println!("-------------------");
+		match file {
+			Some(ref f) => {
+				// TODO: write to file
+			}
+			None => {
+				println!("-------------------");
+				println!("Running with n = {:?}", n);
+				println!("-------------------");
+			}
+		}
+
 		let k: Vec<usize> = (1..n+1).collect();
 
 		// We need to have an extra zero at the front of the p vector
@@ -66,10 +94,17 @@ fn test_bst<T: PartialOrd + Clone + Default>(k: &Vec<T>, p: &Vec<f32>, n: usize,
 	let mut tree = bst::Bst::default();
 	func(k, p, &mut tree, 1, n);
 
-	// TODO: check if possible to print function name here
-	// println!("{:?}", func);
-	println!("Height: {:?}", tree.height());
-	println!("Weighted path length: {:?} \n", tree.weighted_path_length(&p));
+	match file {
+		&Some(ref f) => {
+			// TODO: write to file
+		}
+		&None => {
+			// TODO: check if possible to print function name here
+			// println!("{:?}", func.to_string());
+			println!("Height: {:?}", tree.height());
+			println!("Weighted path length: {:?} \n", tree.weighted_path_length(&p));
+		}
+	}
 }
 
 
