@@ -88,6 +88,14 @@ impl<T: PartialOrd + Clone> Bst<T> {
             &None => {}
         }
     }
+
+    #[allow(dead_code, unused_variables)]
+    pub fn is_empty(&self) -> bool {
+        match &self.root {
+            &Some(ref node) => false,
+            &None => true
+        }
+    }
 }
 
 
@@ -95,7 +103,7 @@ impl<T: PartialOrd + Clone> Bst<T> {
 // "Static" functions //
 ////////////////////////
 
-pub fn optimal_bst(p: &Vec<f32>,n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
+fn optimal_bst(p: &Vec<f32>,n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
     let mut e: Vec2d<f32> = Vec2d::new(n+1, n+2);
     let mut w: Vec2d<f32> = Vec2d::new(n+1, n+2);
     let mut root: Vec2d<usize> = Vec2d::new(n, n);
@@ -119,7 +127,7 @@ pub fn optimal_bst(p: &Vec<f32>,n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
     return (e, root);
 }
 
-pub fn construct_optimal_bst<T: PartialOrd + Clone>(k: &Vec<T>, root: &Vec2d<usize>, tree: &mut Bst<T>, i: usize, j: usize) {
+fn construct_optimal_bst_rec<T: PartialOrd + Clone>(k: &Vec<T>, root: &Vec2d<usize>, tree: &mut Bst<T>, i: usize, j: usize) {
     if j == i-1 {
         return
     }
@@ -129,8 +137,14 @@ pub fn construct_optimal_bst<T: PartialOrd + Clone>(k: &Vec<T>, root: &Vec2d<usi
     tree.insert(new_val);
 
     // Construct subtrees recursively
-    construct_optimal_bst(k, root, tree, i, r-1);
-    construct_optimal_bst(k, root, tree, r+1, j);
+    construct_optimal_bst_rec(k, root, tree, i, r-1);
+    construct_optimal_bst_rec(k, root, tree, r+1, j);
+}
+
+pub fn construct_optimal_bst<T: PartialOrd + Clone>(k: &Vec<T>, p: &Vec<f32>, tree: &mut Bst<T>, i: usize, j: usize) {
+    let root = optimal_bst(p, j).1;
+
+    construct_optimal_bst_rec(k, &root, tree, i, j);
 }
 
 pub fn construct_greedy_bst<T: PartialOrd + Clone>(k: &Vec<T>, p: &Vec<f32>, tree: &mut Bst<T>, i: usize, j: usize) {
@@ -198,7 +212,10 @@ pub fn construct_equal_bst<T: PartialOrd + Clone>(k: &Vec<T>, p: &Vec<f32>, tree
     construct_equal_bst(k, p, tree, r+1, j);
 }
 
-pub fn construct_random_bst<T: PartialOrd + Clone>(k: &Vec<T>, tree: &mut Bst<T>) {
+// Variables p, i and j are not used, but are there to maintain
+// the same function signature as the other bst constructing functions
+#[allow(unused_variables)]
+pub fn construct_random_bst<T: PartialOrd + Clone>(k: &Vec<T>, p: &Vec<f32>, tree: &mut Bst<T>, i: usize, j: usize) {
     let n = k.len();
     let mut used_ind: Vec<bool> = vec![false; n];
     let mut rng = rand::thread_rng();
