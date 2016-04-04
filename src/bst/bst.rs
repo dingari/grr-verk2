@@ -48,7 +48,7 @@ impl<T: PartialOrd + Clone> Bst<T> {
         let depth = self.gather_heights();
 
         if n != depth.len() {
-            panic!("Vectors must be same length!");
+            panic!("Vectors must have same length!");
         }
 
         let mut sum: f32 = 1.0;
@@ -111,7 +111,7 @@ fn optimal_bst(p: &Vec<f32>,n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
     for l in 1..n+1 {
         for i in 1..n-l+2 {
             let j = i + l - 1;
-            e.set(i, j, std::f64::INFINITY as f32);
+            e.set(i, j, std::f32::INFINITY);
             let tmp = w.get(i, j-1) + p[j];
             w.set(i, j, tmp);
             for r in i..j+1 {
@@ -128,6 +128,7 @@ fn optimal_bst(p: &Vec<f32>,n: usize) -> (Vec2d<f32>, Vec2d<usize>) {
 }
 
 fn construct_optimal_bst_rec<T: PartialOrd + Clone>(k: &Vec<T>, root: &Vec2d<usize>, tree: &mut Bst<T>, i: usize, j: usize) {
+    
     if j == i-1 {
         return
     }

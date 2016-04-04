@@ -1,4 +1,5 @@
 extern crate rand;
+extern crate time;
 
 mod bst;
 mod vec2d;
@@ -7,6 +8,7 @@ use rand::Rng;
 use std::env;
 use std::fs::File;
 use std::io::Write;
+use time::*;
 
 fn main() {
 	// Skip over first argument
@@ -67,12 +69,12 @@ fn main() {
 				f.write(tmp_str.as_bytes());
 
 			}
-			None => {
-				println!("-------------------");
-				println!("Running with n = {:?}", n);
-				println!("-------------------");
-			}
-		}	
+			None => {}
+		}
+
+		println!("-------------------");
+		println!("Running with n = {:?}", n);
+		println!("-------------------");
 
 		let k: Vec<usize> = (1..n+1).collect();
 
@@ -89,19 +91,24 @@ fn main() {
 		// Pass the constructing functions in as closures
 		// That way we are able to use just one function 
 		// to test the four cases!
-		test_bst(&k, &p, n, &bst::construct_optimal_bst, &mut file);
-		test_bst(&k, &p, n, &bst::construct_greedy_bst, &mut file);
-		test_bst(&k, &p, n, &bst::construct_equal_bst, &mut file);
-		test_bst(&k, &p, n, &bst::construct_random_bst, &mut file);
+		test_bst(&k, &p, n, "Optimal BST", &bst::construct_optimal_bst, &mut file);
+		test_bst(&k, &p, n, "Greedy BST", &bst::construct_greedy_bst, &mut file);
+		test_bst(&k, &p, n, "Equal BST", &bst::construct_equal_bst, &mut file);
+		test_bst(&k, &p, n, "Random BST", &bst::construct_random_bst, &mut file);
 	}
 
 }
 
-fn test_bst<T: PartialOrd + Clone + Default>(k: &Vec<T>, p: &Vec<f32>, n: usize, 
+fn test_bst<T: PartialOrd + Clone + Default>(k: &Vec<T>, p: &Vec<f32>, n: usize, label: &'static str,
 		func: &Fn(&Vec<T>, &Vec<f32>, &mut bst::Bst<T>, usize, usize), file: &mut Option<File>) {
 	
 	let mut tree = bst::Bst::default();
+	let start = time::precise_time_ns();
 	func(k, p, &mut tree, 1, n);
+	let duration = time::precise_time_ns() - start;
+	let duration_ms = (duration as f64) / (1000.0 * 1000.0);
+
+	println!("{:?} ran in {:?} ms", label, duration_ms);
 
 	let wpl = tree.weighted_path_length(&p);
 
