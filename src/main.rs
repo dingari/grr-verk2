@@ -32,35 +32,7 @@ fn main() {
 	}
 
 	let file: Option<File> = None;
-
-	// let mut tree_opt = bst::Bst::default();
-	// bst::construct_optimal_bst(&k, &p, &mut tree_opt, 1, n);
-	// // println!("Optimal tree: {:?}", tree_opt);
-	// println!("Optimal tree");
-	// println!("Height: {:?}", tree_opt.height());
-	// println!("Weighted path length: {:?} \n", tree_opt.weighted_path_length(&p));
-
-	// let mut tree_gr = bst::Bst::default();
-	// bst::construct_greedy_bst(&k, &p, &mut tree_gr, 1, n);
-	// // println!("Greedy tree: {:?}", tree_gr);
-	// println!("Greedy tree");
-	// println!("Height: {:?}", tree_gr.height());
-	// println!("Weighted path length: {:?} \n", tree_gr.weighted_path_length(&p));
-
-	// let mut tree_eq = bst::Bst::default();
-	// bst::construct_equal_bst(&k, &p, &mut tree_eq, 1, n);
-	// // println!("Equal tree: {:?}", tree_eq);
-	// println!("Equal tree");
-	// println!("Height: {:?}", tree_eq.height());
-	// println!("Weighted path length: {:?} \n", tree_eq.weighted_path_length(&p));
-
-	// let mut tree_rand = bst::Bst::default();
-	// bst::construct_random_bst(&k, &mut tree_rand);
-	// // println!("Random tree: {:?}", tree_rand);
-	// println!("Random tree");
-	// println!("Height: {:?}", tree_rand.height());
-	// println!("Weighted path length: {:?} \n", tree_rand.weighted_path_length(&p));
-
+	
 	for n in n_vec {
 		println!("-------------------");
 		println!("Running with n={:?}", n);
