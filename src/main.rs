@@ -7,7 +7,6 @@ mod vec2d;
 use rand::Rng;
 use std::env;
 use std::fs::File;
-use std::string::String;
 use time::*;
 
 fn main() {
@@ -32,53 +31,75 @@ fn main() {
 		}
 	}
 
-	let n = n_vec.len();
-	let k: Vec<usize> = (1..n+1).collect();
+	let file: Option<File> = None;
 
-	// We need to have an extra zero at the front of the p vector
-	// This is a consequence of implementing the optimal_bst function
-	// to expect another frequency vector q that represents
-	// frequency of values that are not in the tree
-	// I will probably change this later
-	let mut p: Vec<f32> = Vec::new();
-	p.push(0.0);
-	let mut shuffled_vec = zipf_vec_shuffled(n);
-	p.append(&mut shuffled_vec);
+	// let mut tree_opt = bst::Bst::default();
+	// bst::construct_optimal_bst(&k, &p, &mut tree_opt, 1, n);
+	// // println!("Optimal tree: {:?}", tree_opt);
+	// println!("Optimal tree");
+	// println!("Height: {:?}", tree_opt.height());
+	// println!("Weighted path length: {:?} \n", tree_opt.weighted_path_length(&p));
 
-	println!("Running optimal_bst");
-	let start = time::precise_time_ns();
-	let root = bst::optimal_bst(&p, n).1;
-	let duration = time::precise_time_ns() - start;
-	println!("Ran optimal_bst in {:?} ms", (duration as f64) / (1000.0 * 1000.0));
+	// let mut tree_gr = bst::Bst::default();
+	// bst::construct_greedy_bst(&k, &p, &mut tree_gr, 1, n);
+	// // println!("Greedy tree: {:?}", tree_gr);
+	// println!("Greedy tree");
+	// println!("Height: {:?}", tree_gr.height());
+	// println!("Weighted path length: {:?} \n", tree_gr.weighted_path_length(&p));
 
-	let mut tree_opt = bst::Bst::default();
-	bst::construct_optimal_bst(&k, &root, &mut tree_opt, 1, n);
-	// println!("Optimal tree: {:?}", tree_opt);
-	println!("Optimal tree");
-	println!("Height: {:?}", tree_opt.height());
-	println!("Weighted path length: {:?} \n", tree_opt.weighted_path_length(&p));
+	// let mut tree_eq = bst::Bst::default();
+	// bst::construct_equal_bst(&k, &p, &mut tree_eq, 1, n);
+	// // println!("Equal tree: {:?}", tree_eq);
+	// println!("Equal tree");
+	// println!("Height: {:?}", tree_eq.height());
+	// println!("Weighted path length: {:?} \n", tree_eq.weighted_path_length(&p));
 
-	let mut tree_gr = bst::Bst::default();
-	bst::construct_greedy_bst(&k, &p, &mut tree_gr, 1, n);
-	// println!("Greedy tree: {:?}", tree_gr);
-	println!("Greedy tree");
-	println!("Height: {:?}", tree_gr.height());
-	println!("Weighted path length: {:?} \n", tree_gr.weighted_path_length(&p));
+	// let mut tree_rand = bst::Bst::default();
+	// bst::construct_random_bst(&k, &mut tree_rand);
+	// // println!("Random tree: {:?}", tree_rand);
+	// println!("Random tree");
+	// println!("Height: {:?}", tree_rand.height());
+	// println!("Weighted path length: {:?} \n", tree_rand.weighted_path_length(&p));
 
-	let mut tree_eq = bst::Bst::default();
-	bst::construct_equal_bst(&k, &p, &mut tree_eq, 1, n);
-	// println!("Equal tree: {:?}", tree_eq);
-	println!("Equal tree");
-	println!("Height: {:?}", tree_eq.height());
-	println!("Weighted path length: {:?} \n", tree_eq.weighted_path_length(&p));
+	for n in n_vec {
+		println!("-------------------");
+		println!("Running with n={:?}", n);
+		println!("-------------------");
+		let k: Vec<usize> = (1..n+1).collect();
 
-	let mut tree_rand = bst::Bst::default();
-	bst::construct_random_bst(&k, &mut tree_rand);
-	// println!("Random tree: {:?}", tree_rand);
-	println!("Random tree");
-	println!("Height: {:?}", tree_rand.height());
-	println!("Weighted path length: {:?} \n", tree_rand.weighted_path_length(&p));
+		// We need to have an extra zero at the front of the p vector
+		// This is a consequence of implementing the optimal_bst function
+		// to expect another frequency vector q that represents
+		// frequency of values that are not in the tree
+		// I will probably change this later
+		let mut p: Vec<f32> = Vec::new();
+		p.push(0.0);
+		let mut shuffled_vec = zipf_vec_shuffled(n);
+		p.append(&mut shuffled_vec);
+
+		// Pass the constructing functions in as closures
+		// That way we are able to use just one function 
+		// to test the four cases!
+		test_bst(&k, &p, n, &bst::construct_optimal_bst, &file);
+		test_bst(&k, &p, n, &bst::construct_greedy_bst, &file);
+		test_bst(&k, &p, n, &bst::construct_equal_bst, &file);
+		test_bst(&k, &p, n, &bst::construct_random_bst, &file);
+	}
+
 }
+
+fn test_bst<T: PartialOrd + Clone + Default>(k: &Vec<T>, p: &Vec<f32>, n: usize, 
+		func: &Fn(&Vec<T>, &Vec<f32>, &mut bst::Bst<T>, usize, usize), file: &Option<File>) {
+	
+	let mut tree = bst::Bst::default();
+	func(k, p, &mut tree, 1, n);
+
+	// TODO: check if possible to print function name here
+	// println!("{:?}", func);
+	println!("Height: {:?}", tree.height());
+	println!("Weighted path length: {:?} \n", tree.weighted_path_length(&p));
+}
+
 
 fn zipf_vec(n: usize) -> Vec<f32> {
 	let mut c_inv = 0.0;
