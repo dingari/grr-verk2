@@ -1,3 +1,4 @@
-Verkefni 2 í Greiningu reiknirita í HÍ 2016
+## Analysis of algorithms - Programming project 2
+#### University of Iceland - Spring 2016
 
-Samanburður á reikniritum fyrir optimal binary tré
+Comparison of various algorithms to construct an optimal BST
